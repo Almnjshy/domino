@@ -19,18 +19,19 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Grant execute permission
-        run: chmod +x ./gradlew || true
+      - name: Move into project folder
+        run: cd Domins
 
-      - name: Verify project files
-        run: ls -la
+      - name: Make gradlew executable
+        run: chmod +x Domins/gradlew || true
 
-      - name: Build APK (Debug)
+      - name: Build APK
         run: |
+          cd Domins
           if [ -f ./gradlew ]; then
             ./gradlew clean assembleDebug
           else
-            echo "gradlew not found!"
+            echo "gradlew not found in Domins"
             exit 1
           fi
 
@@ -38,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: domino-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: Domins/app/build/outputs/apk/debug/app-debug.apk
