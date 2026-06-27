@@ -1,0 +1,11 @@
+# Gradle
+.gradle/
+build/
+
+# Android Studio
+.idea/
+*.iml
+
+# Temp import
+tmp_import/
+*-zip
