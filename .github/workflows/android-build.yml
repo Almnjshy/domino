@@ -13,30 +13,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Show project structure
+        run: ls -R
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Move into project folder
-        run: cd Domins
+      - name: Detect project path
+        id: detect
+        run: |
+          if [ -f "./gradlew" ]; then
+            echo "path=." >> $GITHUB_OUTPUT
+          elif [ -f "./Domins/gradlew" ]; then
+            echo "path=./Domins" >> $GITHUB_OUTPUT
+          else
+            echo "No Android project found"
+            exit 1
+          fi
 
       - name: Make gradlew executable
-        run: chmod +x Domins/gradlew || true
+        run: chmod +x ${{ steps.detect.outputs.path }}/gradlew
 
       - name: Build APK
         run: |
-          cd Domins
-          if [ -f ./gradlew ]; then
-            ./gradlew clean assembleDebug
-          else
-            echo "gradlew not found in Domins"
-            exit 1
-          fi
+          cd ${{ steps.detect.outputs.path }}
+          ./gradlew clean assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: domino-apk
-          path: Domins/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ steps.detect.outputs.path }}/app/build/outputs/apk/debug/app-debug.apk
