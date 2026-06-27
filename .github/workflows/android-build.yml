@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -19,11 +19,20 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Grant execute permission
+        run: chmod +x ./gradlew || true
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Verify project files
+        run: ls -la
+
+      - name: Build APK (Debug)
+        run: |
+          if [ -f ./gradlew ]; then
+            ./gradlew clean assembleDebug
+          else
+            echo "gradlew not found!"
+            exit 1
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
